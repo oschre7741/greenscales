@@ -1,8 +1,4 @@
-# Computer Programming 1
-# Unit 11 - Graphics
-#
-# A scene that uses loops to make stars and make a picket fence.
-
+#Olivia Schreiner
 
 # Imports
 import pygame
@@ -13,15 +9,15 @@ pygame.mixer.pre_init()
 pygame.init()
 
 #Images
-spaghet = pygame.image.load('marimba.png')
-noodle = pygame.image.load('marimba_sticks.png')
-sauce = pygame.image.load('greenscales.png')
-noodles = pygame.image.load('grass.jpg')
-meatball = pygame.image.load('sun.png')
+clouds_m = pygame.image.load('images/marimba.png')
+rain_m = pygame.image.load('images/marimba_sticks.png')
+greenscales = pygame.image.load('images/greenscales.png')
+grass = pygame.image.load('images/grass.png')
+sun = pygame.image.load('images/sun.png')
 
 # Window
 SIZE = (800, 600)
-TITLE = "Greenscales"
+TITLE = "Greenscales And Knuckles"
 screen = pygame.display.set_mode(SIZE)
 pygame.display.set_caption(TITLE)
 
@@ -35,11 +31,37 @@ WHITE = (255, 255, 255)
 BLUE = (75, 200, 255)
 YELLOW = (255, 255, 175)
 
+#Corgi Animation
+'''
+c1 =
+c2 =
+c3 =
+c4 =
+c5 =
+c6 =
+c7 =
+c8 = 
+c9 =
+c10 =
+c11 =
+c12 =
+'''
+# Block
+bloc = [380, 280]
+vel = [0, 0]
+speed = 5
+
+def draw_block(bloc):
+    x = bloc[0]
+    y = bloc[1]
+    
+    pygame.draw.rect(screen, WHITE, [x, y, 40, 40])
+
 # Make clouds
 num_clouds = 50
 clouds = []
 for i in range(num_clouds):
-    x = random.randrange(-800, 800)
+    x = random.randrange(0, 1600)
     y = random.randrange(-50, 200)
     loc = [x, y]
     clouds.append(loc)
@@ -47,13 +69,13 @@ for i in range(num_clouds):
 def draw_cloud(loc):
     x = loc[0]
     y = loc[1]
-    screen.blit(spaghet, (x, y))
+    screen.blit(clouds_m, (x, y))
 
 # Make rain
-num_rain = 20
+num_rain = 30
 rain = []
 for i in range(num_rain):
-    x = random.randrange(0, 1000)
+    x = random.randrange(-10, 900)
     y = random.randrange(-600, 0)
     loc = [x, y]
     rain.append(loc)
@@ -61,10 +83,13 @@ for i in range(num_rain):
 def draw_rain(loc):
     x = loc[0]
     y = loc[1]
-    screen.blit(noodle, (x,y))
+    screen.blit(rain_m, [x,y])
 
 # Sound Effects
-pygame.mixer.music.load("music.ogg")
+click = pygame.mixer.Sound('sounds/click.ogg')
+wae = pygame.mixer.Sound('sounds/wae.ogg')
+
+pygame.mixer.music.load('sounds/music.ogg')
 
 daytime = True
 
@@ -79,10 +104,28 @@ while not done:
         if event.type == pygame.QUIT:
             done = True     
         elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_RIGHT:
+                vel[0] = speed
+            if event.key == pygame.K_LEFT:
+                vel[0] = -1 * speed
+            if event.key == pygame.K_UP:
+                vel[1] = -1 * speed
+            if event.key == pygame.K_DOWN:
+                vel[1] = speed
             if event.key == pygame.K_SPACE:
                 daytime = not daytime
-                
+            elif event.key == pygame.K_c:
+                click.play()
+            elif event.key == pygame.K_w:
+                wae.play()
+        elif event.type == pygame.KEYUP:
+            vel[0] = 0
+            vel[1] = 0
+                           
     # Game logic
+    bloc[0] += vel[0]
+    bloc[1] += vel[1]
+    
     for c in clouds:
         c[0] += 2
 
@@ -99,19 +142,24 @@ while not done:
             r[0] = random.randrange(-10, 900)
 
     if daytime:
-        meatball = pygame.image.load('sun.png')
+        sun = pygame.image.load('images/sun.png')
     else:
-        meatball = pygame.image.load('sun1.png')
+        pygame.mixer.music.stop()
+        sun = pygame.image.load('images/sun1.png')
+        clouds_m = pygame.image.load('images/cloud_k.png')
+        rain_m = pygame.image.load('images/da_wae.png')
+        greenscales = pygame.image.load('images/doyouknowdawae.png')
+        grass = pygame.image.load('images/grass1.png')
         
     # Drawing code
     ''' sky '''
-    screen.blit(sauce, (0, 0))
+    screen.blit(greenscales, (0, 0))
 
     ''' sun '''
-    screen.blit(meatball, (600, 0))
+    screen.blit(sun, (600, 0))
 
     ''' grass '''
-    screen.blit(noodles, (0, 400))
+    screen.blit(grass, (0, 400))
 
     ''' rain '''
     for r in rain:
@@ -120,6 +168,9 @@ while not done:
     ''' clouds '''
     for c in clouds:
         draw_cloud(c)
+
+    ''' block '''
+    draw_block(bloc)
         
     # Update screen
     pygame.display.flip()
