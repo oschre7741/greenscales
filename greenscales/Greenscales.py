@@ -14,7 +14,7 @@ rain_m = pygame.image.load('images/marimba_sticks.png')
 greenscales = pygame.image.load('images/greenscales.png')
 grass = pygame.image.load('images/grass.png')
 sun = pygame.image.load('images/sun.png')
-
+god = pygame.image.load('images/god.png')
 
 # Window
 SIZE = (800, 600)
@@ -24,12 +24,13 @@ pygame.display.set_caption(TITLE)
 
 # Timer
 clock = pygame.time.Clock()
-refresh_rate = 60
+refresh_rate = 120
 
 # Colors
 GREEN = (0, 175, 0)
 WHITE = (255, 255, 255)
-BLUE = (75, 200, 255)
+BLUE = (93, 161, 191)
+DARK_BLUE = (5, 61, 86)
 YELLOW = (255, 255, 175)
 
 #Corgi Animation
@@ -68,7 +69,12 @@ def draw_block(bloc):
         screen.blit(corgi_right[frame], (x, y))   
     
 # Make clouds
-num_clouds = 30
+def draw_cloud(loc):
+    x = loc[0]
+    y = loc[1]
+    screen.blit(clouds_m, (x, y))
+
+num_clouds = 15
 clouds = []
 for i in range(num_clouds):
     x = random.randrange(0, 1600)
@@ -76,24 +82,19 @@ for i in range(num_clouds):
     loc = [x, y]
     clouds.append(loc)
 
-def draw_cloud(loc):
+# Make rain
+def draw_rain(loc):
     x = loc[0]
     y = loc[1]
-    screen.blit(clouds_m, (x, y))
-
-# Make rain
-num_rain = 15
+    screen.blit(rain_m, [x,y])
+    
+num_rain = 10
 rain = []
 for i in range(num_rain):
     x = random.randrange(-10, 900)
     y = random.randrange(-600, 0)
     loc = [x, y]
     rain.append(loc)
-
-def draw_rain(loc):
-    x = loc[0]
-    y = loc[1]
-    screen.blit(rain_m, [x,y])
 
 # Sound Effects
 shut_up = pygame.mixer.Sound("sounds/shutup.ogg")
@@ -102,10 +103,11 @@ wae = pygame.mixer.Sound('sounds/wae.ogg')
 
 pygame.mixer.music.load('sounds/music.ogg')
 
+#random settings
 daytime = True
-god = False
-god_timer = 0
 
+lightning_prob = 300
+god_timer = 0
 
 # Game loop
 pygame.mixer.music.play(-1)
@@ -133,8 +135,6 @@ while not done:
                 vel[1] = speed
             if event.key == pygame.K_SPACE:
                 daytime = not daytime
-            elif event.key == pygame.K_d:
-                god = not god
             elif event.key == pygame.K_c:
                 click.play()
             elif event.key == pygame.K_w:
@@ -183,16 +183,18 @@ while not done:
         greenscales = pygame.image.load('images/doyouknowdawae.png')
         grass = pygame.image.load('images/grass1.png')
 
-
-    if god:
-        god = pygame.image.load('images/background.png')
+    if random.randrange(0, 300) == 0:
+        god_timer = 5
+        shut_up.play()
     else:
-        god = pygame.image.load('images/god.png')
-        god_timer = shut_up.play()
+        god_timer -= 1
 
     # Drawing code
     ''' sky '''
-    screen.blit(greenscales, (0, 0))
+    if god_timer > 0:
+        screen.blit(god, (0, 0))
+    else:
+        screen.blit(greenscales, (0, 0))
 
     ''' sun '''
     screen.blit(sun, (600, 0))
@@ -210,9 +212,6 @@ while not done:
 
     ''' block '''
     draw_block(bloc)
-
-    ''' god '''
-    screen.blit(god, (0, 0))
 
         
     # Update screen
